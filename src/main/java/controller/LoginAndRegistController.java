@@ -20,7 +20,7 @@ import java.util.Date;
 public class LoginAndRegistController {
     @Autowired
     UserServiceImpl usi;
-
+//啦啦5555打开门打开么
     @RequestMapping("/register")
     public String register(@RequestParam String username,@RequestParam String password,@RequestParam String email){
         //不为空说明用户名已经存在
