@@ -110,4 +110,21 @@ public class Productinfo {
     public void setStatus(Integer status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Productinfo{" +
+                "pId=" + pId +
+                ", pCode=" + pCode +
+                ", pName='" + pName + '\'' +
+                ", pType='" + pType + '\'' +
+                ", brand='" + brand + '\'' +
+                ", pic='" + pic + '\'' +
+                ", pNum=" + pNum +
+                ", price=" + price +
+                ", sale=" + sale +
+                ", intro='" + intro + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

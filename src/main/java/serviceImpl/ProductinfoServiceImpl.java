@@ -11,6 +11,12 @@ import java.util.List;
 public class ProductinfoServiceImpl implements ProductinfoService {
     @Autowired
     ProductinfoMapper pfm;
+
+    @Override
+    public List<Productinfo> selectAllProductsByP_type(String p_type) {
+        return pfm.selectAllProductsByP_type(p_type);
+    }
+
     @Override
     public List<String> selectAllP_type() {
         return pfm.selectAllP_type();

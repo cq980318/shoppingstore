@@ -5,6 +5,7 @@ import entity.Productinfo;
 import java.util.List;
 
 public interface ProductinfoService {
+    List<Productinfo> selectAllProductsByP_type(String p_type);
 
     List<String> selectAllP_type();
 

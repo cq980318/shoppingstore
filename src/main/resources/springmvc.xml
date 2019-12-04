@@ -21,12 +21,12 @@
         <property name="prefix" value="WEB-INF/jsp"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    <mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/*"/>
-            <bean class="interceptor.MyInterceptor" id="commonInterceptor"/>
-        </mvc:interceptor>
-    </mvc:interceptors>
+    <!--<mvc:interceptors>-->
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/*"/>-->
+            <!--<bean class="interceptor.MyInterceptor" id="commonInterceptor"/>-->
+        <!--</mvc:interceptor>-->
+    <!--</mvc:interceptors>-->
     <mvc:default-servlet-handler/>
     <!--<mvc:resources location="/resource/css/" mapping="/woshijiadecss/**"/>-->
     <!--<mvc:resources location="/resource/images/" mapping="/woshijiadeimages/**"/>-->

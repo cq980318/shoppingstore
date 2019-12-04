@@ -29,6 +29,11 @@
      select distinct P_TYPE from productinfo
   </select>
 
+  <select id="selectAllProductsByP_type" resultMap="BaseResultMap">
+    select  <include refid="Base_Column_List" /> from
+     productinfo where p_type=#{p_type,jdbcType=VARCHAR}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from PRODUCTINFO
     where P_ID = #{pId,jdbcType=DECIMAL}

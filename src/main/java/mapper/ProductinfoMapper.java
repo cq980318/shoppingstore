@@ -5,6 +5,8 @@ import entity.Productinfo;
 import java.util.List;
 
 public interface ProductinfoMapper {
+
+    List<Productinfo> selectAllProductsByP_type(String p_type);
     //数组不好用,用list
     List<String> selectAllP_type();
 

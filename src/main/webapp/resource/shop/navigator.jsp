@@ -1,45 +1,47 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Dell
-  Date: 2019/11/27
-  Time: 10:36
-  To change this template use File | Settings | File Templates.
---%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false"%>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
 %>
-<html >
+
+<html>
 <head>
     <base href="<%=basePath%>">
+    <title>商城主页</title>
     <meta charset="UTF-8">
-    <title>3D菜单-官方导航页</title>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <link rel="stylesheet" href="<%=basePath%>resource/css/style.css">
     <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <style>
 
-        #myframe{
-            display: none;
-            width: 100%;
-            height: 1000px;
-            border: 0;
-            scrolling: no;
-        }
+   <style>
 
-        #topImg{
-            position: fixed;
-            right: 10px;
-            bottom: 100px;
-            display: none;
-        }
+       #myframe{
+           display: none;
+           width: 100%;
+           height: 1000px;
+           border:0;
+           scrolling: no;
+           margin-top: 0;
+       }
 
-    </style>
+       #topImg{
+           display: none;
+           position: fixed;
+           right:20px;
+           bottom:200px;
+       }
+
+       #carImg{
+           position: fixed;
+           right:20px;
+           bottom:300px;
+       }
+
+   </style>
+
 </head>
-
 <body>
-<div class='grain'></div>
 <div class='intro'>
     <div class='center'>
         <div class='core'></div>
@@ -232,8 +234,17 @@
             <div class='outer_five__piece'></div>
             <div class='outer_five__piece'></div>
             <div class='outer_five__piece'></div>
+
         </div>
+
         <div class='pieces'>
+
+
+
+
+
+
+
 
             <div class='future_ui__piece blank'></div>
             <div class='future_ui__piece blank'></div>
@@ -266,51 +277,81 @@
             <div class='future_ui__piece blank'></div>
             <div class='future_ui__piece blank'></div>
             <div class='future_ui__piece blank'></div>
+
         </div>
     </div>
 </div>
-
-<iframe src="<%=basePath%>resource/shop/showProducts.jsp" id="myframe"></iframe>
+<iframe  id="myframe"></iframe>
 <img src="<%=basePath%>resource/images/top.png" id="topImg"/>
+<img src="<%=basePath%>resource/images/car.png" id="carImg"/>
+<script>
+$(function(){
+/*一进页面就发请求查询所有的类别*/
+   $.ajax({
+      url:"selectAllP_type",
+       type:"post",
+       success:function(data){
 
-<script type="text/javascript">
-    $(function () {
-        $.ajax({
-            url:"selectAllP_type",
-            type:"POST",
-            success:function (data) {
-
-                for(var i=0;i<data.length;i++){
-                    var str=" <div class='future_ui__piece'>我也是文本 <span><a href='#'>" +
-                        "<font color ='white' size=\"7\">"+data[i]+"</font></a></span>" +
-                        "                <div class='line'></div>" +
-                        "                <div class='tip'></div>" +
-                        "      </div>";
-                    $(".pieces").prepend(str);
-                }
-            }
-        });
-
-       // $(".future_ui__piece").on("click",function () {
-       //  alert($(this).children().children().children().text())
-       // });
+         for(var i=0;i<data.length;i++){
+             var str="            <div class='future_ui__piece'><span><a ><font color ='white' size='7'>"+data[i]+"</font></a></span>" +
+                 "                <div class='line'></div>" +
+                 "                <div class='tip'></div>" +
+                 "            </div>";
+             $(".pieces").prepend(str);
+         }
+       }
+   });
 
 
-         // 唯一的父类                   不唯一
-        $(".center").on("click",".future_ui__piece",function () {
-            alert($(this).children().children().children().text())
-            $("#myframe").show();
-            $(".intro").hide();
-            $("#topImg").show();
-        })
+   $(".pieces").on("click",".future_ui__piece",function(){
+       var type=$(this).children().children().children().text();
+       <%--$("#myframe").attr("src","<%=basePath%>resource/shop/showProducts.jsp?p_type="+type+"&username="+getQueryString("username"));--%>
+       $("#myframe").attr("src","<%=basePath%>resource/shop/showProducts.jsp?p_type="+type);
+       $(".intro").hide();
+       $("#myframe").show();
+       $("#topImg").show();
 
-        $("#topImg").click(function () {
-            $("#myframe").hide();
-            $(".intro").show(1000);
-            $("#topImg").hide();
-        });
 
+   });
+
+   $("#topImg").click(function(){
+       $(".intro").show();
+       $("#myframe").hide(1000);
+       $("#topImg").hide();
+   });
+
+    $("#carImg").click(function(){
+        //判断是否登录
+        if(getCookie("username")&&getCookie("password")  ) {
+            // window.onload.href="";会替换页面,a标签重新打开一个页面或替换
+            window.open("<%=basePath%>resource/shop/carItems.jsp");
+        }else {
+            window.location.href="<%=basePath%>resource/login/login.jsp";
+        }
     });
+
+});
+
+
+function getQueryString(name){
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if(r!=null)
+        return  decodeURI(r[2]);
+    return null;
+}
+function getCookie(name){
+    var strcookie = document.cookie;
+    var arrcookie = strcookie.split("; ");
+    for ( var i = 0; i < arrcookie.length; i++) {
+        var arr = arrcookie[i].split("=");
+        if (arr[0] == name){
+            return arr[1];
+        }
+    }
+    return "";
+}
+
 </script>
 
 </body>

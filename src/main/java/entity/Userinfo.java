@@ -14,6 +14,10 @@ public class Userinfo {
     public Userinfo() {
     }
 
+    public Userinfo(Integer uId) {
+        this.uId = uId;
+    }
+
     @Override
     public String toString() {
         return "Userinfo{" +

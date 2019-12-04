@@ -18,7 +18,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   #msg,#msg2{
     color: white;
   }
+
+
 </style>
+
+
+
 </head>
 
 <body>
@@ -44,8 +49,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 
 	 
-    <a href="<%=path%>/resource/login/forgetPwd.jsp" target="_blank">忘记密码?</a>	
+    <a href="<%=path%>/index.jsp" target="_blank">忘记密码?</a>
 
+	
+	
   </div>
   
   <div class="register w3layouts agileits" id="registerDiv">
@@ -57,6 +64,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <div class="send-button w3layouts agileits">
         <input type="button" value="免费注册" id="btnRegister">
         <div id="msg2"></div>
+    
     </div>
 	 
 	 
@@ -73,123 +81,120 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <input type="hidden" value="<%=basePath%>" id="hidd">
 
-<script type="text/javascript">
-   $(function () {
-       window.flag;
-       var username="${sessionScope.info.username}";
-       var password="${sessionScope.info.password}";
-       $("#username1").val(username);
-       $("#password1").val(password);
-       //记住我之后,对勾勾上
-       if($("#username1").val()!='' && $("#password1").val()!=''){
-           $("input[type='checkbox']").attr("checked","checked");
-       }else{
-           $("input[type='checkbox']").removeAttr("checked");
-       }
-
-       $("#btnLogin").click(function () {
-           if($("input[type='checkbox']").is(':checked')){
-               flag="yes";
-           }else {
-               flag="no";
-           }
-           if($("#username1").val()!='' && $("#password1").val()!='') {
-               //防止参数为空,判断复选框是否勾选
-               $.ajax({
-                   url: "login",
-                   type: "POST",
-                   data: {
-                       username: $("#username1").val(),
-                       password: $("#password1").val(),
-                       flag: flag
-                   },
-                   success: function (data) {
-                       if (data == "unexist") {
-                           $("#msg").html("用户不存在,请先注册");
-                       } else if (data == "yes") {
-                           //跳转页面
-                           $("#msg").html("登陆成功");
-                           // alert(a);
-                       } else {
-                           $("#msg").html("用户名或密码错误");
-                       }
-                   }
-               });
-           }else{
-               $("#msg").html("用户名或密码不能为空");
-           }
-
-           // }else{
-           //     $.ajax({
-           //         url: "login",
-           //         type: "POST",
-           //         data: {
-           //             username: $("#username1").val(),
-           //             password: $("#password1").val(),
-           //             flag: "no"
-           //         },
-           //     });
-           // }
-
-       });
-
-// $.ajax({
-//     url:"session",
-//     type:"POST",
-//     success:function (data) {
-//         $("#username1").val(data.split(",")[0]);
-//         $("#password1").val(data.split(",")[1]);
-//     }
-//
-// });
+<script>
+   function getCookie(name){
+    var strcookie = document.cookie;
+    var arrcookie = strcookie.split("; ");
+    for ( var i = 0; i < arrcookie.length; i++) {
+      var arr = arrcookie[i].split("=");
+      if (arr[0] == name){
+        return arr[1];
+      }
+    }
+    return "";
+  }
 
 
-     // $.ajax({
-     //   url:"cookie",
-     //   type:"POST",
-     //   success:function (data) {
-     //     $("#username1").val(data.split(",")[0]);
-     //     $("#password1").val(data.split(",")[1]);
-     //   }
-     // })
+$(function(){
+    window.flag;
+    <%--var username="${sessionScope.info.username}";--%>
+    <%--var password="${sessionScope.info.password}";--%>
+
+    <%--/*记住密码后从session里获取用户名密码,填充到页面*/--%>
+
+
+var username=getCookie("username");
+var password=getCookie("password");
+var f=getCookie("flag");
+// var username2=getCookie(username);
+<%--var usernameSession="${sessionScope.username}";--%>
+
+  //记住我之后,对勾勾上
+  // if($("#username1").val()!='' && $("#password1").val()!=''){
+  if(f=="yes"){//勾选了
+    $("input[type='checkbox']").attr("checked","checked");
+  }else{
+    $("input[type='checkbox']").removeAttr("checked");
+  }
+
+  if($("input[type='checkbox']").is(':checked')) {
+    $("#username1").val(username);
+    $("#password1").val(password);
+  }
 
 
 
+    $("#btnLogin").click(function(){
+        if($("input[type='checkbox']").is(':checked')) {
+            flag="yes";
+        }else{
+            flag="no";
+        }
 
-     $("#btnRegister").click(function () {
-         if($("#username2").val()!='' && $("#password2").val()!='' && $("#email").val()!='') {
-             $.ajax({
-                 url: "register",
-                 type: "POST",
-                 //同步
-                 async: false,
-                 data: {
-                     username: $("#username2").val(),
-                     password: $("#password2").val(),
-                     email: $("#email").val()
-                 },
-                 success: function (data) {
-                     if (data == "existed") {
-                         $("#msg2").html("用户名已存在");
-                     } else if (data == "yes") {
-                         $("#msg2").html("注册成功");
-                     } else {
-                         $("#msg2").html("注册失败");
-                     }
+      if($("#username1").val()!=''&&$("#password1").val()!=''){
+            $.ajax({
+                url:"login",
+                type:"post",
+                data:{
+                    "username":$("#username1").val(),
+                    "password":$("#password1").val(),
+                    "flag":flag
+                },success:function(data){
+                 if(data=="none"){
+                     $("#msg").html("用户不存在!");
+                 }else if(data=="yes"){
+                     //跳转页面
+                     <%--window.location.href="<%=basePath%>resource/shop/navigator.jsp?username="+$("#username1").val();--%>
+                     window.location.href="<%=basePath%>resource/shop/navigator.jsp";
 
+                 }else{
+                     $("#msg").html("用户名或密码错误!");
                  }
-             })
-         }else{
-             $("#msg2").html("三者不能有一个为空");
-         }
-     });
-     //防止点击多次出现幻读,同步必须等待三次握手完成
-     // return false;
+
+                }
+            })
+  }else{
+      $("#msg").html("用户名或密码不能为空!");
+  }
+    });
 
 
-   })
+
+  $("#btnRegister").click(function(){
+      if($("#username2").val()!=''&&$("#password2").val()!=''&&$("#email").val()!=''){
+          $.ajax({
+              url: "register",
+              type: "post",
+              async: false,
+              data: {
+                  "username": $("#username2").val(),
+                  "password": $("#password2").val(),
+                  "email": $("#email").val()
+              },
+              success: function (data) {
+                  if (data == "existed") {
+                      $("#msg2").html("用户名已存在!");
+                  } else if (data == "yes") {
+                      $("#msg2").html("注册成功!");
+                  } else {
+                      $("#msg2").html("注册失败!");
+                  }
+                  return false;
+              }
+          })
+      }else{
+          $("#msg2").html("注册信息填写不完整!");
+      }
+  });
+
+});
+
+
 
 </script>
 
+
 </body>
+
+
 </html>
