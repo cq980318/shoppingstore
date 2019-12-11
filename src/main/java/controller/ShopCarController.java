@@ -1,5 +1,6 @@
 package controller;
 
+import com.sun.deploy.net.HttpResponse;
 import entity.Productinfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,10 +9,19 @@ import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import serviceImpl.ProductinfoServiceImpl;
+import serviceImpl.UserServiceImpl;
 
+import javax.mail.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 @RestController
 public class ShopCarController {
@@ -19,6 +29,8 @@ public class ShopCarController {
     JedisPool jp;
     @Autowired
     ProductinfoServiceImpl psi;
+    @Autowired
+    UserServiceImpl usi;
     @RequestMapping("/addCar")
     public String addCar(@RequestParam String pid,@RequestParam String username){
         //购物车hmset,key:username
@@ -111,6 +123,72 @@ public class ShopCarController {
             }
         }
 
+
+//   @RequestMapping("/sendEmail")
+    public  void sendEmail(String emailCount, int randomNum, HttpServletRequest req,
+                           HttpServletResponse resp) throws IOException {
+        resp.setContentType("text/html");
+        resp.setCharacterEncoding("UTF-8");
+        String from="1241215936@qq.com";//你自己的邮箱
+        String host="smtp.qq.com";//本机地址
+        //Properties可以确定系统的属性,就是为了寻找我们的host
+        Properties properties=System.getProperties();
+        properties.setProperty("mail.smtp.host", host);
+        properties.setProperty("mail.smtp.port", "25");
+        properties.put("mail.smtp.auth","true");//开启代理
+
+        Authenticator aut=new Authenticator() {//创建Authenticator内部类来填入代理的用户名前缀和密码shiro
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("1241215936","csgomahuuxrobabf");//填用户名和代理密码
+            }
+        };
+
+        //创建Session会话,Session是java.mail API最高入口
+        Session session=Session.getDefaultInstance(properties,aut);
+        //MimeMessage获取session对象,就可以创建要发送的邮箱内容和标题
+        MimeMessage message=new MimeMessage(session);
+        try {
+            message.setFrom(new InternetAddress(from));//设置你自己的邮箱
+            message.addRecipients(Message.RecipientType.TO, emailCount);//设置接受邮箱
+            message.setSubject("验证码");//设置邮箱标题
+            message.setText("您本次的验证码是:"+randomNum);//邮箱内容
+            Transport.send(message);//发送邮箱
+
+        } catch (AddressException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @RequestMapping("/selectEmailByUsername")
+    public String selectEmailByUsername(@RequestParam String username,
+                                        HttpServletRequest httpServletRequest, HttpServletResponse resp) throws IOException {
+        String email = usi.selectEmailByUsername(username);
+        int randNum=(int)((Math.random()*9+1)*100000);
+        sendEmail(email,randNum,httpServletRequest,resp);
+        return String.valueOf(randNum);
+
+    }
+   //删除库存,生成订单需要用户名
+    @RequestMapping("/deleteProductNum")
+    public synchronized String deleteProductNum(@RequestParam String username,@RequestParam Integer pid,
+                                                @RequestParam Integer pnum){
+        Productinfo p = psi.selectByPrimaryKey(pid);
+        System.out.println("...."+p.getpNum()+","+pnum);
+        if(p.getpNum()>pnum) {
+            p.setpNum(p.getpNum() - pnum);
+            psi.updateByPrimaryKey(p);
+            return "yes";
+        }else if(p.getpNum()==pnum) {
+            p.setpNum(0);
+            p.setStatus(1);
+            psi.updateByPrimaryKey(p);
+            return "yes";
+        }
+        return "no";
+    }
     }
 
 

@@ -7,8 +7,20 @@ import org.springframework.stereotype.Service;
 import service.UserService;
 @Service
 public class UserServiceImpl implements UserService {
+
+
     @Autowired
     UserinfoMapper uim;
+
+    @Override
+    public String selectEmailByUsername(String username) {
+        return uim.selectEmailByUsername(username);
+    }
+
+    @Override
+    public int selectUidByUsername(String username) {
+        return uim.selectUidByUsername(username);
+    }
 
     @Override
     public Userinfo selectByUsername(String username) {

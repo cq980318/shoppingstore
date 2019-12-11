@@ -45,7 +45,7 @@
     </bean>
 
 
-    <!-- DAO接口所在包名，Spring会自动查找其下的类,将dao的xml创建成实例 -->
+    <!-- DAO接口所在包名，Spring会自动查找其下的类,将dao的xml创建成实例放到spring容器里-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <!--dao接口和sqlsessionFactory绑定-->
         <property name="basePackage" value="mapper" />
@@ -59,5 +59,8 @@
     </bean>
     <!--开启@Transactional注解,开启事务-->
     <tx:annotation-driven transaction-manager="transactionManager" />
+
+
+
 
 </beans>

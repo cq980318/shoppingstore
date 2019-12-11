@@ -21,15 +21,43 @@
         <property name="prefix" value="WEB-INF/jsp"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    <!--<mvc:interceptors>-->
-        <!--<mvc:interceptor>-->
-            <!--<mvc:mapping path="/*"/>-->
-            <!--<bean class="interceptor.MyInterceptor" id="commonInterceptor"/>-->
-        <!--</mvc:interceptor>-->
-    <!--</mvc:interceptors>-->
+    <!--图片属于文件-->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding" value="UTF-8" />
+        <!-- 指定所上传文件的总大小,单位字节。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+        <property name="maxUploadSize" value="10240000" />
+        <property name="resolveLazily" value="true"/>
+
+    </bean>
+
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/selectAllP_type"/>
+            <bean class="interceptor.MyInterceptor" id="commonInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
     <mvc:default-servlet-handler/>
     <!--<mvc:resources location="/resource/css/" mapping="/woshijiadecss/**"/>-->
     <!--<mvc:resources location="/resource/images/" mapping="/woshijiadeimages/**"/>-->
     <aop:aspectj-autoproxy/>
+    <!--及xml里指明切面-->
+    <bean id="myAs" class="aspect.OrderAspect"></bean>
+    <!--aop:config标签用来配置有关切面的配置-->
+    <aop:config>
+        <!-- 设置切点表达式 以便下面引用 -->
+        <aop:pointcut expression="execution(* controller.ShopCarController.deleteProductNum(..))" id="cut"/>
+        <!-- 配置切面所用的bean 和优先级 -->
+        <aop:aspect ref="myAs" order="2" >
+            <!-- 配置切面方法 -->
+            <!--<aop:before method="beforeCheck" pointcut-ref="cut"/>-->
+            <!--<aop:after method="afterCheck"  pointcut-ref="cut"/>-->
+            <aop:after-returning method="afterReturn" pointcut-ref="cut" returning="res"/>
+            <aop:after-throwing method="afterThrow" pointcut-ref="cut" throwing="ex"/>
+            <!--<aop:around method="around" pointcut-ref="cut"/>-->
+        </aop:aspect>
+
+    </aop:config>
+
 
 </beans>

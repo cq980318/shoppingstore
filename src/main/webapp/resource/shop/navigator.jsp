@@ -12,6 +12,8 @@
     <meta charset="UTF-8">
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <link rel="stylesheet" href="<%=basePath%>resource/css/style.css">
+    <link rel="stylesheet" href="<%=basePath%>resource/css/searchbox.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
    <style>
@@ -42,8 +44,11 @@
 
 </head>
 <body>
+
 <div class='intro'>
+
     <div class='center'>
+
         <div class='core'></div>
         <div class='outer_one'>
             <div class='outer_one__piece'></div>
@@ -303,16 +308,26 @@ $(function(){
    });
 
 
+
    $(".pieces").on("click",".future_ui__piece",function(){
        var type=$(this).children().children().children().text();
-       <%--$("#myframe").attr("src","<%=basePath%>resource/shop/showProducts.jsp?p_type="+type+"&username="+getQueryString("username"));--%>
-       $("#myframe").attr("src","<%=basePath%>resource/shop/showProducts.jsp?p_type="+type);
-       $(".intro").hide();
-       $("#myframe").show();
-       $("#topImg").show();
-
-
+       var totalPage;
+       $.ajax({
+           url:"selectTotal",
+           data:{
+               p_type:type
+           },
+           success:function (data) {
+               totalPage=data/4;
+               <%--$("#myframe").attr("src","<%=basePath%>resource/shop/showProducts.jsp?p_type="+type+"&username="+getQueryString("username"));--%>
+               $("#myframe").attr("src","<%=basePath%>resource/shop/showProducts.jsp?p_type="+type+"&totalPage="+totalPage);
+               $(".intro").hide();
+               $("#myframe").show();
+               $("#topImg").show();
+           }
+       });
    });
+
 
    $("#topImg").click(function(){
        $(".intro").show();

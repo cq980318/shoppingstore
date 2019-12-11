@@ -18,6 +18,11 @@
     where U_ID = #{uId,jdbcType=DECIMAL}
   </select>
 
+  <select id="selectUidByUsername" resultType="java.lang.Integer">
+    select u_id from USERINFO
+    where USERNAME=#{uId,jdbcType=DECIMAL}
+
+  </select>
 
   <select id="selectByUsername" resultMap="BaseResultMap">
     select
@@ -26,6 +31,10 @@
     where USERNAME=#{username,jdbcType=VARCHAR}
   </select>
 
+<select id="selectEmailByUsername" parameterType="java.lang.String" resultType="java.lang.String">
+  select email from USERINFO
+  where USERNAME=#{username,jdbcType=VARCHAR}
+</select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from USERINFO

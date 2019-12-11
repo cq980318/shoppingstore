@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="<%=basePath%>resource/css/resetcar.css">
     <link rel="stylesheet" href="<%=basePath%>resource/css/carts.css">
+    <link rel="stylesheet" href="<%=basePath%>resource/css/search.css">
 
 
     <style>
@@ -73,7 +74,7 @@
             width:100%;
             height:100%;
             top:0;
-            opacity: 0.8;
+            opacity: 0.5;
             position: fixed;
             z-index:100;
 
@@ -139,17 +140,17 @@
 
 
 
-    <div class="cartBox">
+    <div class="cartBox"><!--多个商家多个cartBox-->
 
         <div class="shop_info">
             <div class="all_check">
                 <!--店铺全选-->
                 <input type="checkbox" id="shop_a" class="shopChoice">
             </div>
-
         </div>
 
         <div class="order_content">
+            <%--多个ul--%>
         </div>
     </div>
 
@@ -180,11 +181,6 @@
 
 
 <script type="text/javascript">
-
-
-
-
-
             var flag=true;
 
     $(function (){
@@ -401,68 +397,99 @@
         })
 
 
-        var checkCode;
+        var checkCode; //= Math.floor(Math.random() * (999999 - 100000+1)) + 100000;
         $("#sendMail").click(function () {
-            $.ajax({
-                url:"sendEmail",
-                type:"post",
-                data:{
+          $.ajax({
+                url:"selectEmailByUsername",
+              type:"post",
+              data:{
                     "username":getCookie("username")
-                },
-                success:function(data){
-                    checkCode=data;
+              },
+              success:function (data) {
+
+                  alert(data)
+                  checkCode=data;
+
+                  //email=data;
+                  // $.ajax({
+                  //
+                  //     url:"sendEmail",
+                  //     type:"post",
+                  //     data:{
+                  //         "emailCount":email,
+                  //         "randomNum":checkCode
+                  //     }
+                  //
+                  // });
+              }
+          })
 
 
-                }
-            })
-        })
-
-
+        });
+         var pid;//全局变量
         $("#surePay").click(function () {
-            // if($("#code").val()==checkCode){
+            if($("#code").val()==checkCode){
+                alert("验证码正确");
             $("#big").hide();
             $("#MyDiv").hide();
 
 
             var labels=$("label[id!='firstLabel']label[class='mark']");
             for(var i=0;i<labels.length;i++){
-
+                pid=labels.eq(i).attr("pid");//给全局变量赋值
                 labels.eq(i).parent().parent().remove();
                 $("total_text").html("0.00");
 
                 $(".calBtn1").removeClass("payDiv");
                 $(".calBtn1").css("background","#E5E5E5");
 
-                $.ajax({
-                    url:"removeItems",
-                    type:"post",
-                    data:{
-                        "username":getCookie("username"),
-                        "pid":labels.eq(i).attr("pid")
-                    }
+                alert(labels.eq(i).attr("pid"))//1
 
-                });
 
+                // $.ajax({
+                //     url:"removeItems",
+                //     type:"post",
+                //
+                //     data:{
+                //         "pid":labels.eq(i).attr("pid"),
+                //         "username":getCookie("username")
+                //     }
+                //
+                // });
 
                 $.ajax({
                     url:"deleteProductNum",
                     type:"post",
+                    async:false,
                     data:{
                         "username":getCookie("username"),
                         "pid":labels.eq(i).attr("pid"),
                         "pnum":labels.eq(i).attr("pnum")
+                    },
+                    success: function (data) {
+
+                        if(data=="yes"){
+                            $.ajax({
+                                url:"removeItems",
+                                type:"post",
+                                data:{
+                                    "pid":pid,
+                                    "username":getCookie("username")
+                                },
+                                success:function (data) {
+                                    alert(pid);
+                                }
+
+                            });
+
+                        }
                     }
-
                 });
-
-
-
-
 
             }
 
-            // }
-        })
+             }
+        });
 
 
 

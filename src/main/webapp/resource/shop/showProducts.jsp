@@ -11,6 +11,7 @@
     <meta charset="UTF-8">
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="<%=basePath%>resource/js/modernizr.custom.js"></script>
+    <script src="<%=basePath%>resource/js/jquery.page.js"></script>
     <link href="http://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="<%=basePath%>resource/css/demo.css" />
     <link rel="stylesheet" type="text/css" href="<%=basePath%>resource/css/component.css" />
@@ -18,9 +19,12 @@
 
    <style>
 
-       body{
-           background: #2A2B30;
-       }
+       .tcdPageCode{padding: 5px 0px 20px 10px;color: #ccc;text-align:right;margin-right: 5%;float: right;}
+       .tcdPageCode a,.tcdPageCode .notcdNumber,.ellipsis{display: inline-block;color: #428bca;display: inline-block;height: 25px;	line-height: 25px;	padding: 0 10px;border-right: 1px solid #ddd;border-top: 1px solid #ddd;border-bottom: 1px solid #ddd;vertical-align: middle;}
+       .prevPage{border-left: 1px solid #ddd;}
+       .tcdPageCode a:hover{text-decoration: none;background-color: #F5F5F5;}
+       .tcdPageCode span.current{display: inline-block;height: 25px;line-height: 25px;padding: 0 10px;color: #fff;background-color: #428bca;	border: 1px solid #428bca;vertical-align: middle;}
+       .tcdPageCode span.disabled{	display: inline-block;height: 25px;line-height: 25px;padding: 0 10px;color: #bfbfbf;background: #f2f2f2;border: 1px solid #bfbfbf;vertical-align: middle;}
 
    </style>
 
@@ -50,7 +54,7 @@
     <button class="action action--close"><i class="fa fa-remove"></i><span class="action__text action__text--invisible">Close comparison overlay</span></button>
 </section>
 
-
+    <div class="tcdPageCode"></div>
 
 
     <script src="<%=basePath%>resource/js/classie.js"></script>
@@ -70,34 +74,81 @@
     }
 
 $(function(){
-  $.ajax({
-   url:"selectAllProductsByP_type",
-      type:"post",
-      data:{
-      "p_type":getQueryString("p_type")
-      },
-      success:function(data){
+    var page=1;
+    $.ajax({
+        url:"selectAllProductsByP_type",
+        type:"post",
+        data:{
+            "p_type":getQueryString("p_type"),
+            "page":page
+        },
+        success:function(data){
+            for(var i=0;i<data.length;i++){
+                var str="<div class='product'>" +
+                    "            <div class='product__info' >" +
+                    "                <img class='product__image' pid='"+data[i].pId+"' src='<%=basePath%>resource/images/1.png' alt='Product 1' />" +
+                    "                <h3 class='product__title'>"+data[i].pName+"</h3>" +
+                    "                <span class='product__region extra highlight'>"+data[i].intro+"</span>" +
+                    "                <span class='product__price highlight'>"+data[i].price+"</span>" +
+                    "                <button class='action action--button action--buy' pid='"+data[i].pId+"'><i class='fa fa-shopping-cart'></i><span class='action__text cd-add-to-cart' >加入购物车</span></button>" +
+                    "            </div>" +
+                    "            <label class='action action--compare-add'><input class='check-hidden' type='checkbox' /><i class='fa fa-plus'></i><i class='fa fa-check'></i><span class='action__text action__text--invisible'>比较商品</span></label>'" +
+                    "        </div>";
 
-       for(var i=0;i<data.length;i++){
-       var str="<div class='product'>" +
-           "            <div class='product__info'>" +
-           "                <img class='product__image' src='<%=basePath%>resource/images/1.png' alt='Product 1' />" +
-           "                <h3 class='product__title'>"+data[i].pName+"</h3>" +
-           "                <span class='product__region extra highlight'>"+data[i].intro+"</span>" +
-           "                <span class='product__price highlight'>"+data[i].price+"</span>" +
-           "                <button class='action action--button action--buy' pid='"+data[i].pId+"'><i class='fa fa-shopping-cart'></i><span class='action__text cd-add-to-cart' >加入购物车</span></button>" +
-           "            </div>" +
-           "            <label class='action action--compare-add'><input class='check-hidden' type='checkbox' /><i class='fa fa-plus'></i><i class='fa fa-check'></i><span class='action__text action__text--invisible'>比较商品</span></label>'" +
-           "        </div>";
+                $(".grid").append(str);
+            }
 
-           $(".grid").append(str);
-       }
+            loadjscssfile("<%=basePath%>resource/js/classie.js","js");
+            loadjscssfile("<%=basePath%>resource/js/main.js","js");
+            <%--loadjscssfile("<%=basePath%>resource/css/style.css","css");--%>
 
-          loadjscssfile("<%=basePath%>resource/js/classie.js","js");
-          loadjscssfile("<%=basePath%>resource/js/main.js","js");
+        }
+    });
 
-      }
-  });
+    $(".grid").on("click",".product__image",function () {
+        var pid=$(this).attr("pid");
+        alert(pid);
+        window.open("<%=basePath%>resource/shop/productdetail.jsp?p_id="+pid);
+    });
+
+    $(".tcdPageCode").createPage({
+        pageCount: getQueryString("totalPage"),
+        current: 1,
+        backFn: function(p) {
+            $.ajax({
+                url:"selectAllProductsByP_type",
+                type:"post",
+                data:{
+                    "p_type":getQueryString("p_type"),
+                    "page":p
+                },
+                success:function(data){
+                    // $(".grid").html("");
+                    $(".grid").children().remove();
+                    for(var i=0;i<data.length;i++){
+
+                        var str="<div class='product'>" +
+                            "            <div class='product__info'>" +
+                            "                <img class='product__image' src='<%=basePath%>resource/images/1.png' alt='Product 1' />" +
+                            "                <h3 class='product__title'>"+data[i].pName+"</h3>" +
+                            "                <span class='product__region extra highlight'>"+data[i].intro+"</span>" +
+                            "                <span class='product__price highlight'>"+data[i].price+"</span>" +
+                            "                <button class='action action--button action--buy' pid='"+data[i].pId+"'><i class='fa fa-shopping-cart'></i><span class='action__text cd-add-to-cart' >加入购物车</span></button>" +
+                            "            </div>" +
+                            "            <label class='action action--compare-add'><input class='check-hidden' type='checkbox' /><i class='fa fa-plus'></i><i class='fa fa-check'></i><span class='action__text action__text--invisible'>比较商品</span></label>'" +
+                            "        </div>";
+
+                        $(".grid").append(str);
+                    }
+
+                    loadjscssfile("<%=basePath%>resource/js/classie.js","js");
+                    loadjscssfile("<%=basePath%>resource/js/main.js","js");
+                    <%--loadjscssfile("<%=basePath%>resource/css/style.css","css");--%>
+
+                }
+            });
+        }
+    });
 
 
   $(".grid").on("click",".action--button",function(){

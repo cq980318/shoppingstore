@@ -18,6 +18,10 @@
     P_ID, P_CODE, P_NAME, P_TYPE, BRAND, PIC, P_NUM, PRICE, SALE, INTRO, STATUS
   </sql>
 
+  <select id="selectAll" resultMap="BaseResultMap">
+    select  <include refid="Base_Column_List" /> from PRODUCTINFO
+  </select>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
@@ -27,11 +31,25 @@
 
   <select id="selectAllP_type" resultType="java.lang.String">
      select distinct P_TYPE from productinfo
+
   </select>
 
   <select id="selectAllProductsByP_type" resultMap="BaseResultMap">
+    <!--select  <include refid="Base_Column_List" /> from-->
+     <!--productinfo where p_type=#{p_type,jdbcType=VARCHAR}-->
+    select * from(
+    select t.*,rownum rn from (
+    select * from productinfo where p_type=#{p_type2,jdbcType=VARCHAR}) t where rownum&lt;=#{page2,jdbcType=DECIMAL}*4)
+    where rn>=(#{page2,jdbcType=DECIMAL}-1)*4+1
+  </select>
+
+  <select id="selectAllProductsP_type" resultMap="BaseResultMap">
     select  <include refid="Base_Column_List" /> from
-     productinfo where p_type=#{p_type,jdbcType=VARCHAR}
+    productinfo where p_type=#{p_type,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectTotal" resultType="java.lang.Integer">
+    select count(*) from PRODUCTINFO where p_type=#{p_type,jdbcType=VARCHAR}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
@@ -51,6 +69,9 @@
   </insert>
 
   <insert id="insertSelective" parameterType="entity.Productinfo" >
+    <selectKey keyProperty="pId" order="BEFORE" resultType="int">
+      select seq_user_info_id.nextval from dual
+    </selectKey>
     insert into PRODUCTINFO
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="pId != null" >

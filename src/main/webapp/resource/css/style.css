@@ -1,5 +1,9 @@
 ﻿/* Variables */
 /* Placeholders */
+body{
+    background: #2A2B30;
+}
+
 body .center {
   left: 0;
   right: 0;

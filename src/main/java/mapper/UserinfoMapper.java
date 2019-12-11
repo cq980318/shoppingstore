@@ -5,6 +5,8 @@ import entity.Userinfo;
 public interface UserinfoMapper {
 
     Userinfo selectByUsername(String username);
+    String selectEmailByUsername(String username);
+    int selectUidByUsername(String username);
 
     int deleteByPrimaryKey(Integer uId);
 

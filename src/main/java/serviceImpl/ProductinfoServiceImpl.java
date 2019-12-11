@@ -13,13 +13,29 @@ public class ProductinfoServiceImpl implements ProductinfoService {
     ProductinfoMapper pfm;
 
     @Override
-    public List<Productinfo> selectAllProductsByP_type(String p_type) {
-        return pfm.selectAllProductsByP_type(p_type);
+    public List<Productinfo> selectAllProductsByP_type(String p_type,Integer page) {
+        return pfm.selectAllProductsByP_type(p_type,page);
     }
+
 
     @Override
     public List<String> selectAllP_type() {
         return pfm.selectAllP_type();
+    }
+
+    @Override
+    public List<Productinfo> selectAllProductsP_type(String p_type) {
+        return pfm.selectAllProductsP_type(p_type);
+    }
+
+    @Override
+    public List<Productinfo> selectAll() {
+        return pfm.selectAll();
+    }
+
+    @Override
+    public int selectTotal(String p_type) {
+        return pfm.selectTotal(p_type);
     }
 
     @Override
